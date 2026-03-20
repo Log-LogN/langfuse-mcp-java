@@ -1,0 +1,73 @@
+# ── Maven build output ────────────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ── IDE: IntelliJ IDEA ───────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ── IDE: VS Code ─────────────────────────────────────────────────────
+.vscode/
+*.code-workspace
+
+# ── IDE: Eclipse ─────────────────────────────────────────────────────
+.classpath
+.project
+.settings/
+.factorypath
+bin/
+
+# ── IDE: NetBeans ────────────────────────────────────────────────────
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ── Environment / secrets ────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.secret
+*.credentials
+
+# ── macOS ────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── Windows ──────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── Linux ────────────────────────────────────────────────────────────
+*~
+
+# ── Java ─────────────────────────────────────────────────────────────
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# ── Logs ─────────────────────────────────────────────────────────────
+*.log
+logs/
+spring.log
+
+# ── Temporary / misc ─────────────────────────────────────────────────
+*.tmp
+*.bak
+*.swp
+*.orig
+

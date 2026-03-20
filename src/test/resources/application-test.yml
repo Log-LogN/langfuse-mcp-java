@@ -1,0 +1,12 @@
+langfuse:
+  public-key: test-pk
+  secret-key: test-sk
+  host: http://langfuse.test
+  timeout: 5s
+  read-only: true
+
+spring:
+  ai:
+    mcp:
+      server:
+        enabled: false

@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: langfuse-mcp
+  main:
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: langfuse-mcp
+        version: 1.0.0
+        type: SYNC
+        sse-message-endpoint: /mcp/message
+        annotation-scanner:
+          enabled: true
+        capabilities:
+          tool: true
+
+langfuse:
+  public-key: ${LANGFUSE_PUBLIC_KEY}
+  secret-key: ${LANGFUSE_SECRET_KEY}
+  host: ${LANGFUSE_HOST}
+  timeout: ${LANGFUSE_TIMEOUT:30s}
+  read-only: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.langfuse: DEBUG
