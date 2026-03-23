@@ -1,20 +1,28 @@
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+
+WORKDIR /workspace
+
+COPY pom.xml ./
+COPY src ./src
+
+RUN mvn -B -DskipTests package
+
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Build the fat JAR first: mvn clean package -DskipTests
-COPY target/langfuse-mcp-1.0.0.jar app.jar
+COPY --from=build /workspace/target/langfuse-mcp-*.jar /app/app.jar
 
 # Expose the SSE/WebMVC port (transport: SSE on /sse, messages on /mcp/message)
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Usage examples
 # ─────────────────────────────────────────────────────────────────────────────
 #
-# Build image:
+# Build image (compiles the jar inside Docker):
 #   docker build -t langfuse-mcp:latest .
 #
 # Run (SSE mode, port 8080):
