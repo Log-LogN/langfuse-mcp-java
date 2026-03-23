@@ -179,6 +179,8 @@ On macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ## Docker
 
+The included `Dockerfile` is a multi-stage build: it compiles the Spring Boot jar inside Docker and runs the MCP server on port `8080`, so no local `mvn package` step is required when using Docker.
+
 ```bash
 # Build image
 docker build -t langfuse-mcp:latest .
@@ -191,7 +193,13 @@ docker run --rm -p 8080:8080 \
   langfuse-mcp:latest
 ```
 
-If Langfuse runs in Docker on the same host, use `host.docker.internal`:
+After the container starts:
+
+- Health check: `http://localhost:8080/actuator/health`
+- MCP SSE endpoint: `http://localhost:8080/sse`
+- MCP message endpoint: `http://localhost:8080/mcp/message`
+
+If your Langfuse instance is running in another Docker container on the same host, use `host.docker.internal`:
 
 ```bash
 -e LANGFUSE_HOST=http://host.docker.internal:3000
