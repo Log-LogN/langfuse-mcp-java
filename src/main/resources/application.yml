@@ -13,8 +13,9 @@ spring:
         name: langfuse-mcp
         version: 1.0.0
         type: SYNC
-        sse-endpoint: /mcp
-        sse-message-endpoint: /mcp/message
+        protocol: streamable
+        streamable-http:
+          mcp-endpoint: /mcp
         annotation-scanner:
           enabled: true
         capabilities:
