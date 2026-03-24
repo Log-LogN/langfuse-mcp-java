@@ -8,5 +8,6 @@ import com.langfuse.mcp.dto.response.PromptResponse;
 
 public interface PromptService {
     ApiResponse<PagedResponse<PromptResponse>> listPrompts(PromptFilterRequest request);
+
     ApiResponse<PromptResponse> getPrompt(PromptGetRequest request);
 }

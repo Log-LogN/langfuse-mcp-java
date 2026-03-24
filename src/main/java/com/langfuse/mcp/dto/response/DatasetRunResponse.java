@@ -2,6 +2,7 @@ package com.langfuse.mcp.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,16 +12,14 @@ import java.util.List;
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ScoreConfigResponse {
+public class DatasetRunResponse {
     private String id;
     private String name;
-    /** NUMERIC | CATEGORICAL | BOOLEAN */
-    private String dataType;
-    private Double minValue;
-    private Double maxValue;
-    private List<Object> categories;
-    private String description;
-    private Boolean isArchived;
+    private String datasetId;
+    private String datasetName;
+    private JsonNode metadata;
     private String createdAt;
     private String updatedAt;
+    /** Populated only when fetching a single run with its items */
+    private List<DatasetRunItemResponse> datasetRunItems;
 }

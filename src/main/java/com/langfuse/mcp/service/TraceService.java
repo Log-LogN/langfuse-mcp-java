@@ -4,6 +4,7 @@ import com.langfuse.mcp.dto.common.ApiResponse;
 import com.langfuse.mcp.dto.common.PagedResponse;
 import com.langfuse.mcp.dto.request.TraceFilterRequest;
 import com.langfuse.mcp.dto.response.ErrorCountResponse;
+import com.langfuse.mcp.dto.response.MutationResponse;
 import com.langfuse.mcp.dto.response.TraceResponse;
 
 public interface TraceService {
@@ -18,4 +19,8 @@ public interface TraceService {
     ApiResponse<TraceResponse> getExceptionDetails(String traceId);
 
     ApiResponse<ErrorCountResponse> getErrorCount(String fromTimestamp, String toTimestamp);
+
+    ApiResponse<MutationResponse> deleteTrace(String traceId);
+
+    ApiResponse<MutationResponse> deleteTraces(String traceIdsCsv);
 }

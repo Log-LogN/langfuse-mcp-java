@@ -14,4 +14,5 @@ public class PaginationMeta {
     private Integer limit;
     private Long totalItems;
     private Integer totalPages;
+    private String cursor;
 }

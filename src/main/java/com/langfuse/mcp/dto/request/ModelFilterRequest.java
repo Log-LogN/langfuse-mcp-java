@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
-public class ObservationFilterRequest {
-    private String traceId;
-    /** GENERATION | SPAN | EVENT */
-    private String type;
+public class ModelFilterRequest {
     @Builder.Default private Integer page = 1;
     @Builder.Default private Integer limit = 20;
 }

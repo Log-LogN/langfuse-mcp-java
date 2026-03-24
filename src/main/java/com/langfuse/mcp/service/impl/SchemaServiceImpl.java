@@ -32,8 +32,9 @@ public class SchemaServiceImpl implements SchemaService {
             MODEL_USAGE : model, inputTokens, outputTokens, totalTokens, totalCost, requestCount
             SCORE_ANALYTICS: name, mean, median, p25, p75, p90, p95, stddev, count
 
-            NOTE: This MCP server is READ-ONLY. Only GET operations are supported.
-                  No traces, observations, prompts, or scores can be created, updated, or deleted.
+            NOTE: This MCP server now exposes read operations plus selected write actions
+                  for prompts, comments, scores, datasets, models, media, annotation queues,
+                  traces, dataset runs, and score configs.
             """;
 
     @Override

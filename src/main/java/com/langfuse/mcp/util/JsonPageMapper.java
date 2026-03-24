@@ -73,6 +73,7 @@ public class JsonPageMapper {
                 .limit(m.path("limit").asInt())
                 .totalItems(m.path("totalItems").asLong())
                 .totalPages(m.path("totalPages").asInt())
+                .cursor(m.path("cursor").isMissingNode() || m.path("cursor").isNull() ? null : m.path("cursor").asText())
                 .build();
     }
 }

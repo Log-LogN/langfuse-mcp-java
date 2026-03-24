@@ -4,6 +4,7 @@ import com.langfuse.mcp.dto.common.ApiResponse;
 import com.langfuse.mcp.dto.common.PagedResponse;
 import com.langfuse.mcp.dto.request.TraceFilterRequest;
 import com.langfuse.mcp.dto.response.ErrorCountResponse;
+import com.langfuse.mcp.dto.response.MutationResponse;
 import com.langfuse.mcp.dto.response.TraceResponse;
 import com.langfuse.mcp.service.TraceService;
 import lombok.RequiredArgsConstructor;
@@ -148,5 +149,31 @@ public class TraceTools {
             @McpToolParam(description = "Start of time range in ISO-8601 format, e.g. 2025-06-01T00:00:00Z. Omit to count from the beginning of the project.") String fromTimestamp,
             @McpToolParam(description = "End of time range in ISO-8601 format, e.g. 2025-06-30T23:59:59Z. Omit to count up to the current time.") String toTimestamp) {
         return traceService.getErrorCount(fromTimestamp, toTimestamp);
+    }
+
+    @McpTool(name = "delete_trace", description = """
+            Deletes a single trace by ID.
+            This action is irreversible.
+            traceId is required.
+            """)
+    public ApiResponse<MutationResponse> deleteTrace(
+            @McpToolParam(description = "Trace ID to delete. Required.", required = true) String traceId) {
+        if (traceId == null || traceId.isBlank()) {
+            return ApiResponse.error("INVALID_INPUT", "traceId is required");
+        }
+        return traceService.deleteTrace(traceId.strip());
+    }
+
+    @McpTool(name = "delete_traces", description = """
+            Deletes multiple traces in one request.
+            Pass a comma-separated list of trace IDs.
+            This action is irreversible.
+            """)
+    public ApiResponse<MutationResponse> deleteTraces(
+            @McpToolParam(description = "Comma-separated trace IDs to delete. Required.", required = true) String traceIdsCsv) {
+        if (traceIdsCsv == null || traceIdsCsv.isBlank()) {
+            return ApiResponse.error("INVALID_INPUT", "traceIdsCsv is required");
+        }
+        return traceService.deleteTraces(traceIdsCsv.strip());
     }
 }

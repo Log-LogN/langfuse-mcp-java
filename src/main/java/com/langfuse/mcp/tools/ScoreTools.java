@@ -71,4 +71,46 @@ public class ScoreTools {
         }
         return scoreService.getScoreConfig(configId.strip());
     }
+
+    @McpTool(name = "create_score_config", description = """
+            Creates a score config definition used to validate or structure future scores.
+            name and dataType are required.
+            For categorical configs, categoriesJson should be a JSON array of {label,value} objects.
+            For numeric configs, minValue and maxValue are optional bounds.
+            """)
+    public ApiResponse<ScoreConfigResponse> createScoreConfig(
+            @McpToolParam(description = "Score config name. Required.", required = true) String name,
+            @McpToolParam(description = "Data type: NUMERIC | CATEGORICAL | BOOLEAN. Required.", required = true) String dataType,
+            @McpToolParam(description = "Optional categorical options as a JSON array of {label,value} objects.") String categoriesJson,
+            @McpToolParam(description = "Optional minimum numeric value.") Double minValue,
+            @McpToolParam(description = "Optional maximum numeric value.") Double maxValue,
+            @McpToolParam(description = "Optional description shown in Langfuse.") String description) {
+        if (name == null || name.isBlank()) {
+            return ApiResponse.error("INVALID_INPUT", "name is required");
+        }
+        if (dataType == null || dataType.isBlank()) {
+            return ApiResponse.error("INVALID_INPUT", "dataType is required");
+        }
+        return scoreService.createScoreConfig(name.strip(), dataType.strip(), categoriesJson, minValue, maxValue, description);
+    }
+
+    @McpTool(name = "update_score_config", description = """
+            Updates an existing score config.
+            configId is required.
+            Provide only the fields you want to change.
+            categoriesJson must be a JSON array of {label,value} objects when supplied.
+            """)
+    public ApiResponse<ScoreConfigResponse> updateScoreConfig(
+            @McpToolParam(description = "Score config ID. Required.", required = true) String configId,
+            @McpToolParam(description = "Optional new score config name.") String name,
+            @McpToolParam(description = "Optional categorical options as a JSON array of {label,value} objects.") String categoriesJson,
+            @McpToolParam(description = "Optional minimum numeric value.") Double minValue,
+            @McpToolParam(description = "Optional maximum numeric value.") Double maxValue,
+            @McpToolParam(description = "Optional description shown in Langfuse.") String description,
+            @McpToolParam(description = "Optional archive flag.") Boolean isArchived) {
+        if (configId == null || configId.isBlank()) {
+            return ApiResponse.error("INVALID_INPUT", "configId is required");
+        }
+        return scoreService.updateScoreConfig(configId.strip(), name, categoriesJson, minValue, maxValue, description, isArchived);
+    }
 }

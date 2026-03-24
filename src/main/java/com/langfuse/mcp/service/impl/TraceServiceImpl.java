@@ -8,6 +8,7 @@ import com.langfuse.mcp.dto.common.PagedResponse;
 import com.langfuse.mcp.dto.common.PaginationMeta;
 import com.langfuse.mcp.dto.request.TraceFilterRequest;
 import com.langfuse.mcp.dto.response.ErrorCountResponse;
+import com.langfuse.mcp.dto.response.MutationResponse;
 import com.langfuse.mcp.dto.response.TraceResponse;
 import com.langfuse.mcp.exception.LangfuseApiException;
 import com.langfuse.mcp.exception.ResourceNotFoundException;
@@ -17,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -178,6 +181,39 @@ public class TraceServiceImpl implements TraceService {
         } catch (LangfuseApiException ex) {
             log.error("getErrorCount error: {}", ex.getMessage());
             return ApiResponse.error("ERROR_COUNT_FETCH_ERROR", ex.getMessage());
+        }
+    }
+
+    @Override
+    public ApiResponse<MutationResponse> deleteTrace(String traceId) {
+        try {
+            JsonNode raw = apiClient.deleteTrace(traceId);
+            return ApiResponse.ok(MutationResponse.builder()
+                    .id(traceId)
+                    .message(raw.path("message").asText("Trace deleted"))
+                    .build());
+        } catch (ResourceNotFoundException ex) {
+            return ApiResponse.error("TRACE_NOT_FOUND", ex.getMessage());
+        } catch (LangfuseApiException ex) {
+            log.error("deleteTrace({}) error: {}", traceId, ex.getMessage());
+            return ApiResponse.error("TRACE_DELETE_ERROR", ex.getMessage());
+        }
+    }
+
+    @Override
+    public ApiResponse<MutationResponse> deleteTraces(String traceIdsCsv) {
+        try {
+            List<String> traceIds = Arrays.stream(traceIdsCsv.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .toList();
+            JsonNode raw = apiClient.deleteTraces(Map.of("traceIds", traceIds));
+            return ApiResponse.ok(MutationResponse.builder()
+                    .message(raw.path("message").asText("Traces deleted"))
+                    .build());
+        } catch (LangfuseApiException ex) {
+            log.error("deleteTraces error: {}", ex.getMessage());
+            return ApiResponse.error("TRACE_DELETE_ERROR", ex.getMessage());
         }
     }
 }
