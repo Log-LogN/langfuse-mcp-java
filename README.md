@@ -180,7 +180,7 @@ After the container starts:
 
 ---
 
-## Tools Reference (54 total)
+## Tools Reference (55 total)
 
 Every tool returns a consistent `ApiResponse<T>` envelope:
 
@@ -262,6 +262,36 @@ Pagination is 1-based (`page` defaults to `1`). `limit` defaults to `20` and is 
 | `delete_dataset_run` | Delete a run and all its items. **Irreversible.** Requires `datasetName` and `runName`. |
 | `list_dataset_run_items` | Paginated list of items in a run. Requires `datasetId` and `runName`. |
 | `create_dataset_run_item` | Create a run item linking a dataset item to a trace/observation. Creates the run automatically if it does not yet exist. |
+
+---
+
+### Metrics (1 tool)
+
+| Tool | Description |
+|---|---|
+| `get_cost_metrics` | Query Langfuse cost, token, latency, and usage analytics via the Metrics API v1. Mirrors: GET /api/public/metrics?query=<json>. Pass the full query as a JSON string. All aggregation is server-side. |
+
+This tool accepts a single required parameter `query` which must be a JSON-serialised string matching the Metrics API schema. Examples (pass these as a single JSON string):
+
+- Total cost last 7 days:
+
+  {"view":"traces","metrics":[{"measure":"totalCost","aggregation":"sum"}],"fromTimestamp":"2026-03-18T00:00:00Z","toTimestamp":"2026-03-25T23:59:59Z"}
+
+- Daily cost trend this week:
+
+  {"view":"traces","metrics":[{"measure":"totalCost","aggregation":"sum"},{"measure":"count","aggregation":"count"}],"timeDimension":{"granularity":"day"},"fromTimestamp":"2026-03-18T00:00:00Z","toTimestamp":"2026-03-25T23:59:59Z"}
+
+- Cost by model:
+
+  {"view":"observations","dimensions":[{"field":"providedModelName"}],"metrics":[{"measure":"totalCost","aggregation":"sum"},{"measure":"totalTokens","aggregation":"sum"}],"fromTimestamp":"2026-03-18T00:00:00Z","toTimestamp":"2026-03-25T23:59:59Z"}
+
+- Cost for a specific user:
+
+  {"view":"traces","metrics":[{"measure":"totalCost","aggregation":"sum"}],"filters":[{"column":"userId","operator":"=","value":"user-123","type":"string"}],"fromTimestamp":"2026-03-18T00:00:00Z","toTimestamp":"2026-03-25T23:59:59Z"}
+
+- Production environment only:
+
+  filters: [{"column":"environment","operator":"=","value":"production","type":"string"}]
 
 ---
 
@@ -402,10 +432,10 @@ com.langfuse.mcp
 │   ├── common/    ApiResponse · PagedResponse · PaginationMeta
 │   ├── request/   Filter/get request classes (12 classes)
 │   └── response/  Response classes (19 classes — JsonNode for open-schema fields)
-├── service/       Interfaces (14): Trace · Session · Prompt · PromptWrite · Dataset · DatasetRun
-│   │              · Score · AnnotationQueue · Comment · Model · LlmConnection · Project · User · Schema
-│   └── impl/      *ServiceImpl (14) — business logic, filtering, error mapping
-├── tools/         @McpTool classes (14) — param validation, delegation, agent-friendly descriptions
+├── service/       Interfaces (15): Trace · Session · Prompt · PromptWrite · Dataset · DatasetRun
+│   │              · Score · AnnotationQueue · Comment · Model · LlmConnection · Project · User · Schema · CostMetrics
+│   └── impl/      *ServiceImpl (15) — business logic, filtering, error mapping
+├── tools/         @McpTool classes (15) — param validation, delegation, agent-friendly descriptions
 │   ├── TraceTools.java             (8 tools)
 │   ├── SessionTools.java           (3 tools)
 │   ├── PromptTools.java            (2 tools)
@@ -419,7 +449,8 @@ com.langfuse.mcp
 │   ├── LlmConnectionTools.java     (2 tools)
 │   ├── ProjectTools.java           (1 tool)
 │   ├── UserTools.java              (1 tool)
-│   └── SchemaTools.java            (1 tool)
+│   ├── SchemaTools.java            (1 tool)
+│   └── CostMetricsTools.java       (1 tool)
 └── util/
     └── JsonPageMapper.java         Centralised JSON → PagedResponse mapper (no duplication)
 ```

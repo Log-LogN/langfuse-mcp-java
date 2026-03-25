@@ -14,6 +14,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -538,6 +541,50 @@ public class LangfuseApiClient {
                 .queryParamIfPresent("version", Optional.ofNullable(version))
                 .buildAndExpand(promptName).toUriString();
         return delete(uri);
+    }
+
+    // ── Metrics ────────────────────────────────────────────────────────────
+
+    /**
+     * Query the Langfuse Metrics API v1.
+     *
+     * @param queryJson JSON-serialised {@code CostMetricsRequest} passed as the {@code query}
+     *                  query-parameter (URL-encoded automatically by Spring's RestClient).
+     */
+    public JsonNode getMetrics(String queryJson) {
+        String encodedQuery = URLEncoder.encode(queryJson, StandardCharsets.UTF_8);
+
+        String base = properties.baseUrl();
+        if (base == null || base.isBlank()) {
+            throw new LangfuseApiException("LANGFUSE_HOST is not configured", -1, "/api/public/metrics");
+        }
+        String fullUrl = base.replaceAll("/+$", "") + "/api/public/metrics?query=" + encodedQuery;
+        log.debug("GET {}", fullUrl);
+        String responseBody = null;
+        try {
+            responseBody = langfuseRestClient.get().uri(URI.create(fullUrl)).retrieve().body(String.class);
+            if (responseBody == null || responseBody.isBlank()) {
+                throw new LangfuseApiException("Unexpected empty response on GET /api/public/metrics", -1, "/api/public/metrics");
+            }
+            return objectMapper.readTree(responseBody);
+        } catch (RestClientResponseException ex) {
+            throw new LangfuseApiException(
+                    "Langfuse API error on GET /api/public/metrics [base=" + base + "]: " + ex.getMessage(),
+                    ex.getStatusCode().value(), "/api/public/metrics");
+        } catch (RestClientException ex) {
+            throw new LangfuseApiException(buildConnectivityMessage("GET", "/api/public/metrics", ex), ex, "/api/public/metrics");
+        } catch (JsonProcessingException ex) {
+            throw new LangfuseApiException(
+                    "Unexpected JSON on GET /api/public/metrics [base=" + base + "]: "
+                            + ex.getOriginalMessage() + " | body=" + abbreviate(responseBody),
+                    ex, "/api/public/metrics");
+        } catch (LangfuseApiException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new LangfuseApiException(
+                    "Unexpected error on GET /api/public/metrics [base=" + base + "]: " + ex.getMessage(),
+                    ex, "/api/public/metrics");
+        }
     }
 
     // ── Projects ───────────────────────────────────────────────────────────
